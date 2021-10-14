@@ -102,7 +102,7 @@ class LungSegDataGenerator(keras.utils.Sequence):
         Returns:
             int: Returneaza numarul de batches per epoca
         """
-        return # de completat
+        return self.dataset_df/self.batch_size
 
     def __combine_masks(self, img_right, img_left):
         """Combina mastile pentru cei doi plamani intr-o singura masca
