@@ -10,7 +10,7 @@ from tensorflow import keras
 from tensorflow.keras.preprocessing.image import load_img
 from tensorflow.keras.models import load_model
 
-
+from UNetModel import UNetModel
 config = None
 with open('config.yaml') as f: # reads .yml/.yaml files
     config = yaml.safe_load(f)
