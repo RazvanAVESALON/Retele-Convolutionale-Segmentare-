@@ -85,3 +85,82 @@ dataset_df = create_dataset_csv(config["data"]["images_dir"],
 
 dataset_df = split_dataset(dataset_df, split_per=config['data']['split_per'], seed=1)
 dataset_df.head(3)
+
+
+class LungSegDataGenerator(keras.utils.Sequence):
+    """Un DataGenerator custom pentru setul de date pentru segmentare plamanilor"""
+
+    def __init__(self, dataset_df, img_size, batch_size, shuffle=True):
+        self.dataset_df = dataset_df.reset_index(drop=True)
+        self.img_size = tuple(img_size)
+        self.batch_size = batch_size
+        self.shuffle = shuffle
+        self.indexes = np.arange(len(self.dataset_df))
+
+    def __len__(self):
+        """
+        Returns:
+            int: Returneaza numarul de batches per epoca
+        """
+        return # de completat
+
+    def __combine_masks(self, img_right, img_left):
+        """Combina mastile pentru cei doi plamani intr-o singura masca
+
+        Args:
+            img_right (pillow.Image): masca pentru plamanul drept
+            img_left (pillow.Image): masca pentru plamanul stang
+
+        Returns:
+            numpy.array: masca cu cei doi plamani
+        """
+
+        img_right = np.array(img_right, dtype="uint8") * 1/255
+        img_left = np.array(img_left, dtype="uint8") * 1/255
+
+        img = (img_right + img_left).astype("uint8")
+
+        return img
+
+
+    def __getitem__(self, idx):
+        """Returneaza un tuple (input, target) care corespunde cu batch #idx.
+
+        Args:
+            idx (int): indexul batch-ului curent
+
+        Returns:
+           tuple:  (input, target) care corespunde cu batch #idx
+        """
+
+        i = idx * self.batch_size
+        batch_indexes = self.indexes[i:i+self.batch_size]
+        batch_df = self.dataset_df.loc[batch_indexes, :].reset_index(drop=True)
+
+        # x, y trebuie sa aiba dimensiunea [batch size, height, width, nr de canale]
+        x = np.zeros((self.batch_size,) + self.img_size + (1,), dtype="float32")
+        y = np.zeros((self.batch_size,) + self.img_size + (1,), dtype="float32")
+
+        for i, row in batch_df.iterrows():
+            # citeste imaginea de input de la calea row['image_path]
+            # hint: functia load_img
+            img = # de completat
+            x[i] = # de completat
+
+            # citeste mastile de segmentare pentru cei doi plamani
+            img_right = # de completat
+            img_left = # de completat
+
+            img = self.__combine_masks(img_right, img_left)
+
+            y[i] = # de completat
+        
+        return x, y
+    
+    def on_epoch_end(self):
+        """
+        Actualizeaza indecsii dupa fiecare epoca si ii amesteca daca parametrul shuffle este True 
+        """
+        self.indexes = np.arange(len(self.dataset_df))
+        if self.shuffle == True:
+            np.random.shuffle(self.indexes)
