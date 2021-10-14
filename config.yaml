@@ -1,0 +1,20 @@
+data:
+  images_dir: D:\work\03_intership\AI intro\7. Retele Complet Convolutionale\Date radiografii pulmonare\imagini
+  right_masks_dir: D:\work\03_intership\AI intro\7. Retele Complet Convolutionale\Date radiografii pulmonare\segmentari\plamanul drept
+  left_masks_dir: D:\work\03_intership\AI intro\7. Retele Complet Convolutionale\Date radiografii pulmonare\segmentari\plamanul stang
+  data_csv: dataset_seg.csv
+
+  img_size: [128, 128]
+  split_per:
+    train: 0.8
+    valid: 0.1
+    test: 0.1
+
+train:
+  bs: 8
+  lr: 0.001
+  opt: Adam
+  epochs: 10
+
+test:
+  threshold: 0.5
