@@ -102,7 +102,7 @@ class LungSegDataGenerator(keras.utils.Sequence):
         Returns:
             int: Returneaza numarul de batches per epoca
         """
-        return self.dataset_df/self.batch_size
+        return len(self.dataset_df)//self.batch_size
 
     def __combine_masks(self, img_right, img_left):
         """Combina mastile pentru cei doi plamani intr-o singura masca
@@ -144,16 +144,16 @@ class LungSegDataGenerator(keras.utils.Sequence):
         for i, row in batch_df.iterrows():
             # citeste imaginea de input de la calea row['image_path]
             # hint: functia load_img
-            img = # de completat
-            x[i] = # de completat
+            img = load_img(row['image_path'], target_size=self.img_size)
+            x[i] = img
 
             # citeste mastile de segmentare pentru cei doi plamani
-            img_right = # de completat
-            img_left = # de completat
+            img_right= load_img(row['image_path'],target_size=self.img_size) # de completat
+            img_left = load_img(row['image_path'],target_size=self.img_size) # de completat
 
             img = self.__combine_masks(img_right, img_left)
 
-            y[i] = # de completat
+            y[i] = self.img
         
         return x, y
     
@@ -164,3 +164,8 @@ class LungSegDataGenerator(keras.utils.Sequence):
         self.indexes = np.arange(len(self.dataset_df))
         if self.shuffle == True:
             np.random.shuffle(self.indexes)
+
+data_gen = LungSegDataGenerator(dataset_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"])
+x, y = data_gen[0]
+print(x.shape, y.shape)
+
