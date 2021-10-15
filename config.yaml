@@ -1,7 +1,7 @@
 data:
-  images_dir: D:\ai intro\AI intro\7. Retele Complet Convolutionale\Date radiografii pulmonare - Copy
-  right_masks_dir: D:\ai intro\AI intro\7. Retele Complet Convolutionale\Date radiografii pulmonare - Copy
-  left_masks_dir: D:\ai intro\AI intro\7. Retele Complet Convolutionale\Date radiografii pulmonare - Copy
+  images_dir: D:\ai intro\AI intro\7. Retele Complet Convolutionale\Date radiografii pulmonare - Copy\train\imagini
+  right_masks_dir: D:\ai intro\AI intro\7. Retele Complet Convolutionale\Date radiografii pulmonare - Copy\train\segmentari\plamanul drept
+  left_masks_dir: D:\ai intro\AI intro\7. Retele Complet Convolutionale\Date radiografii pulmonare - Copy\train\segmentari\plamanul stang
   data_csv: dataset_seg.csv
 
   img_size: [128, 128]
