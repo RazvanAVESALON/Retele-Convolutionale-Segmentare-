@@ -171,3 +171,29 @@ data_gen = LungSegDataGenerator(dataset_df, img_size=config["data"]["img_size"],
 x, y = data_gen[0]
 print(x.shape, y.shape)
 
+f, axs = plt.subplots(1, 2)
+axs[0].axis('off')
+axs[0].set_title("Input")
+axs[0].imshow(x[0], cmap="gray")
+
+axs[1].axis('off')
+axs[1].set_title("Mask")
+axs[1].imshow(y[0], cmap="gray")
+
+unet = UNetModel()
+# n_channels=1, deoarece imaginea de input are un singur canal
+# n_classes=1, o singura clasa de prezis -> plaman vs background
+unet_model = unet.build(*config["data"]["img_size"], n_channels=1, n_classes=1)
+unet_model.summary()
+
+train_df = # de completat
+train_gen = LungSegDataGenerator(train_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=True)
+
+valid_df = # de completat
+valid_gen = LungSegDataGenerator(valid_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=True)
+
+model.compile(optimizer="rmsprop", loss="sparse_categorical_crossentropy",metrics="accuracy")
+
+callbacks = [keras.callbacks.ModelCheckpoint('damn.h5', save_best_only=True]
+epochs = 15
+model.fit(train_gen, epochs=epochs, validation_data=val_gen, callbacks=callbacks)
