@@ -140,11 +140,13 @@ class LungSegDataGenerator(keras.utils.Sequence):
         # x, y trebuie sa aiba dimensiunea [batch size, height, width, nr de canale]
         x = np.zeros((self.batch_size,) + self.img_size + (1,), dtype="float32")
         y = np.zeros((self.batch_size,) + self.img_size + (1,), dtype="float32")
+        print (x.shape) 
 
         for i, row in batch_df.iterrows():
             # citeste imaginea de input de la calea row['image_path]
             # hint: functia load_img
-            img = load_img(row['image_path'], target_size=self.img_size)
+            img = load_img(row["image_path"],target_size=self.img_size)
+            
             x[i] = img
 
             # citeste mastile de segmentare pentru cei doi plamani
