@@ -200,4 +200,4 @@ valid_gen = LungSegDataGenerator(valid_df, img_size=config["data"]["img_size"], 
 unet_model.compile(loss="binary_crossentropy",optimizer=tf.keras.optimizers.Adam(learning_rate=config['train']['lr']) , metrics=["accuracy"])
 
 callbacks = [keras.callbacks.ModelCheckpoint('damn.h5', save_best_only=True)]
-history=unet_model.fit(train_gen , steps_per_epoch=50, epochs=config['train']['epochs'], validation_data=valid_gen , validation_steps, callbacks=callbacks)
+history=unet_model.fit(train_gen ,steps_per_epoch=10, epochs=config['train']['epochs'], validation_data=valid_gen , callbacks=callbacks)
