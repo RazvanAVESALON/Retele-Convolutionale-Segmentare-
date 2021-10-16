@@ -134,21 +134,21 @@ class LungSegDataGenerator(keras.utils.Sequence):
         Returns:
            tuple:  (input, target) care corespunde cu batch #idx
         """
-
+        self.img_size=config['data']['img_size']
         i = idx * self.batch_size
         batch_indexes = self.indexes[i:i+self.batch_size]
         batch_df = self.dataset_df.loc[batch_indexes, :].reset_index(drop=True)
 
         # x, y trebuie sa aiba dimensiunea [batch size, height, width, nr de canale]
-        x = np.zeros((self.batch_size,) + self.img_size + (3,), dtype="float32")
-        y = np.zeros((self.batch_size,) + self.img_size + (3,), dtype="float32")
+        x = np.zeros((self.batch_size,) + self.img_size + (1,), dtype="float32")
+        y = np.zeros((self.batch_size,) + self.img_size + (1,), dtype="float32")
         
 
         for i, row in batch_df.iterrows():
             # citeste imaginea de input de la calea row['image_path]
             # hint: functia load_img
             
-            img = load_img(row['image_path'],target_size=(128,128,3))
+            img = load_img(row['image_path'],target_size=self.img_size)
             
             x[i] = img
 
@@ -189,7 +189,7 @@ axs[1].imshow(y[0], cmap="gray")
 unet = UNetModel()
 # n_channels=1, deoarece imaginea de input are un singur canal
 # n_classes=1, o singura clasa de prezis -> plaman vs background
-unet_model = unet.build(*config["data"]["img_size"], n_channels=3, n_classes=3)
+unet_model = unet.build(*config["data"]["img_size"], n_channels=1, n_classes=1)
 unet_model.summary()
 
 
@@ -206,7 +206,7 @@ unet_model.compile(loss="binary_crossentropy",optimizer=tf.keras.optimizers.Adam
 callbacks = [
     keras.callbacks.ModelCheckpoint('damn.h5', save_best_only=True)
     ]
-history=unet_model.fit(train_gen ,batch_size=8 , validation_data=valid_gen , epochs=config['train']['epochs'],callbacks=callbacks,workers=1)
+history=unet_model.fit(train_gen, validation_data=valid_gen , epochs=config['train']['epochs'],callbacks=callbacks,workers=1)
 
 def plot_acc_loss(result):
     acc = result.history['acc']
