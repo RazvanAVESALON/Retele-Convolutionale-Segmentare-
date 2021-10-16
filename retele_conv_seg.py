@@ -140,16 +140,16 @@ class LungSegDataGenerator(keras.utils.Sequence):
         batch_df = self.dataset_df.loc[batch_indexes, :].reset_index(drop=True)
 
         # x, y trebuie sa aiba dimensiunea [batch size, height, width, nr de canale]
-        x = np.zeros((self.batch_size,) + self.img_size + (1,), dtype="float32")
-        y = np.zeros((self.batch_size,) + self.img_size + (1,), dtype="float32")
+        x = np.zeros((self.batch_size,) + self.img_size + (3,), dtype="float32")
+        y = np.zeros((self.batch_size,) + self.img_size + (3,), dtype="float32")
         
 
         for i, row in batch_df.iterrows():
             # citeste imaginea de input de la calea row['image_path]
             # hint: functia load_img
             
-            img = load_img(row['image_path'],target_size=(64,64))
-           
+            img = load_img(row['image_path'],target_size=self.img_size)
+            
             x[i] = img
 
             # citeste mastile de segmentare pentru cei doi plamani
@@ -189,7 +189,7 @@ axs[1].imshow(y[0], cmap="gray")
 unet = UNetModel()
 # n_channels=1, deoarece imaginea de input are un singur canal
 # n_classes=1, o singura clasa de prezis -> plaman vs background
-unet_model = unet.build(*config["data"]["img_size"], n_channels=1, n_classes=1)
+unet_model = unet.build(*config["data"]["img_size"], n_channels=3, n_classes=3)
 unet_model.summary()
 
 
@@ -209,9 +209,9 @@ callbacks = [
 history=unet_model.fit(train_gen, validation_data=valid_gen , epochs=config['train']['epochs'],callbacks=callbacks,workers=1)
 
 def plot_acc_loss(result):
-    acc = result.history['acc']
+    acc = result.history['accuracy']
     loss = result.history['loss']
-    val_acc = result.history['val_acc']
+    val_acc = result.history['val_accuracy']
     val_loss = result.history['val_loss']
     
     plt.figure(figsize=(15, 5))
@@ -246,7 +246,7 @@ x, y = test_gen[0]
 y_pred = unet_model.predict(x)
 y_pred.shape
 
-r_exs = 4 # nr de exemple de afisat
+nr_exs = 4 # nr de exemple de afisat
 fig, axs = plt.subplots(nr_exs, 3, figsize=(10, 10))
 for i, (img, gt, pred) in enumerate(zip(x[:nr_exs], y[:nr_exs], y_pred[:nr_exs])):
     axs[i][0].axis('off')
