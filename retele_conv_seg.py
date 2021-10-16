@@ -86,7 +86,6 @@ dataset_df = create_dataset_csv(config["data"]["images_dir"],
 dataset_df = split_dataset(dataset_df, split_per=config['data']['split_per'], seed=1)
 dataset_df.head(3)
 
-
 class LungSegDataGenerator(keras.utils.Sequence):
     """Un DataGenerator custom pentru setul de date pentru segmentare plamanilor"""
 
@@ -138,24 +137,28 @@ class LungSegDataGenerator(keras.utils.Sequence):
         batch_df = self.dataset_df.loc[batch_indexes, :].reset_index(drop=True)
 
         # x, y trebuie sa aiba dimensiunea [batch size, height, width, nr de canale]
-        x = np.zeros((self.batch_size,) + self.img_size + (1,), dtype="float32")
-        y = np.zeros((self.batch_size,) + self.img_size + (1,), dtype="float32")
-        print (x.shape) 
+        x = np.zeros((self.batch_size,) + self.img_size + (3,), dtype="float32")
+        y = np.zeros((self.batch_size,) + self.img_size + (3,), dtype="float32")
+        
 
         for i, row in batch_df.iterrows():
             # citeste imaginea de input de la calea row['image_path]
             # hint: functia load_img
-            img = load_img(row["image_path"],target_size=self.img_size)
+            
+            img = load_img(row['image_path'],target_size=(128,128,3))
             
             x[i] = img
 
             # citeste mastile de segmentare pentru cei doi plamani
-            img_right= load_img(row['image_path'],target_size=self.img_size) # de completat
-            img_left = load_img(row['image_path'],target_size=self.img_size) # de completat
+            
+            img_right= load_img(row['right_lung_mask_path'],target_size=self.img_size) # de completat
+            
+            img_left = load_img(row['left_lung_mask_path'],target_size=self.img_size) # de completat
 
             img = self.__combine_masks(img_right, img_left)
 
-            y[i] = self.img
+            y[i] = img
+            
         
         return x, y
     
@@ -186,14 +189,15 @@ unet = UNetModel()
 unet_model = unet.build(*config["data"]["img_size"], n_channels=1, n_classes=1)
 unet_model.summary()
 
-train_df = # de completat
+
+train_df=dataset_df.loc[dataset_df['subset']=='train']
 train_gen = LungSegDataGenerator(train_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=True)
 
-valid_df = # de completat
+valid_df =dataset_df.loc[dataset_df['subset']=='valid']# de completat
 valid_gen = LungSegDataGenerator(valid_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=True)
 
-model.compile(optimizer="rmsprop", loss="sparse_categorical_crossentropy",metrics="accuracy")
 
-callbacks = [keras.callbacks.ModelCheckpoint('damn.h5', save_best_only=True]
-epochs = 15
-model.fit(train_gen, epochs=epochs, validation_data=val_gen, callbacks=callbacks)
+unet_model.compile(loss="binary_crossentropy",optimizer=tf.keras.optimizers.Adam(learning_rate=config['train']['lr']) , metrics=["accuracy"])
+
+callbacks = [keras.callbacks.ModelCheckpoint('damn.h5', save_best_only=True)]
+history=unet_model.fit(train_gen , steps_per_epoch=50, epochs=config['train']['epochs'], validation_data=valid_gen , validation_steps, callbacks=callbacks)
