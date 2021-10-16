@@ -148,8 +148,8 @@ class LungSegDataGenerator(keras.utils.Sequence):
             # citeste imaginea de input de la calea row['image_path]
             # hint: functia load_img
             
-            img = load_img(row['image_path'],target_size=self.img_size)
-            
+            img = load_img(row['image_path'],target_size=(64,64))
+           
             x[i] = img
 
             # citeste mastile de segmentare pentru cei doi plamani
