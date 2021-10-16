@@ -7,7 +7,7 @@ class UNetModel:
     Class for creating a standard U-Net architecture
     """
 
-    def build(self, width, height, n_channels=1, n_classes=1):
+    def build(self, width, height, n_channels=3, n_classes=3):
         """
         Created the U-Net network
         :param width: 
