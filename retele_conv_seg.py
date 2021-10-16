@@ -134,7 +134,7 @@ class LungSegDataGenerator(keras.utils.Sequence):
         Returns:
            tuple:  (input, target) care corespunde cu batch #idx
         """
-        self.img_size=config['data']['img_size']
+       
         i = idx * self.batch_size
         batch_indexes = self.indexes[i:i+self.batch_size]
         batch_df = self.dataset_df.loc[batch_indexes, :].reset_index(drop=True)
@@ -142,7 +142,7 @@ class LungSegDataGenerator(keras.utils.Sequence):
         # x, y trebuie sa aiba dimensiunea [batch size, height, width, nr de canale]
         x = np.zeros((self.batch_size,) + self.img_size + (1,), dtype="float32")
         y = np.zeros((self.batch_size,) + self.img_size + (1,), dtype="float32")
-        
+        print(self.img_size)
 
         for i, row in batch_df.iterrows():
             # citeste imaginea de input de la calea row['image_path]
