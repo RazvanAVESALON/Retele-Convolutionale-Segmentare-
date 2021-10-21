@@ -17,4 +17,4 @@ train:
   epochs: 10
 
 test:
-  threshold: 0.1
+  threshold: 0.5
