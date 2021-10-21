@@ -150,7 +150,7 @@ class LungSegDataGenerator(keras.utils.Sequence):
             
             img = load_img(row['image_path'],target_size=self.img_size)
             
-            x[i] = img
+            x[i] = np.array(img) * 1/255
 
             # citeste mastile de segmentare pentru cei doi plamani
             
@@ -180,11 +180,12 @@ print(x.shape, y.shape)
 f, axs = plt.subplots(1, 2)
 axs[0].axis('off')
 axs[0].set_title("Input")
-axs[0].imshow(x[0], cmap="gray")
+axs[0].imshow((x[0]*255).astype(np.uint8))
 
 axs[1].axis('off')
 axs[1].set_title("Mask")
-axs[1].imshow(y[0], cmap="gray")
+axs[1].imshow(y[0])
+plt.show()
 
 unet = UNetModel()
 # n_channels=1, deoarece imaginea de input are un singur canal
