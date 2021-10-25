@@ -7,9 +7,8 @@ import tensorflow as tf
 import yaml
 
 from tensorflow import keras
-from tensorflow.keras.preprocessing.image import load_img
 from tensorflow.keras.models import load_model
-
+from tensorflow.keras.preprocessing.image import ImageDataGenerator , load_img
 
 
 
@@ -177,9 +176,13 @@ class LungSegDataGenerator(keras.utils.Sequence):
             # hint: functia load_img
             
             img = load_img(row['image_path'],target_size=self.img_size)
-            
+            datagen = ImageDataGenerator(rotation_range=40, width_shift_range=0.2,height_shift_range=0.2,shear_range=0.2,zoom_range=0.2,horizontal_flip=True,fill_mode='nearest')
             x[i] = np.array(img) * 1/255
-
+            
+            
+            datagen.fit(x[i])
+        
+                
             # citeste mastile de segmentare pentru cei doi plamani
             
             img_right= load_img(row['right_lung_mask_path'],target_size=self.img_size) # de completat
@@ -189,7 +192,9 @@ class LungSegDataGenerator(keras.utils.Sequence):
             img = self.__combine_masks(img_right, img_left)
 
             y[i] = img
-            
+            y[i] = y[i].reshape((1,) + y[i].shape) 
+            datagen.fit(y[i])
+
         
         return x, y
     
