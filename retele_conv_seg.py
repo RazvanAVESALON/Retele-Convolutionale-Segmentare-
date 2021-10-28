@@ -166,7 +166,7 @@ class LungSegDataGenerator(keras.utils.Sequence):
         i = idx * self.batch_size
         batch_indexes = self.indexes[i:i+self.batch_size]
         batch_df = self.dataset_df.loc[batch_indexes, :].reset_index(drop=True)
-
+        datagen=ImageDataGenerator(rotation_range=90)
         # x, y trebuie sa aiba dimensiunea [batch size, height, width, nr de canale]
         x = np.zeros((self.batch_size,) + self.img_size + (3,), dtype="float32")
         y = np.zeros((self.batch_size,) + self.img_size + (3,), dtype="float32")
@@ -177,13 +177,10 @@ class LungSegDataGenerator(keras.utils.Sequence):
             # hint: functia load_img
             
             img = load_img(row['image_path'],target_size=self.img_size)
-            datagen = ImageDataGenerator(rotation_range=40, width_shift_range=0.2,height_shift_range=0.2,shear_range=0.2,zoom_range=0.2,horizontal_flip=True,fill_mode='nearest')
-            x[i] = np.array(img) * 1/255
+            
+            x[i]=np.array(img) * 1/255
             
             
-            datagen.fit(x[i])
-        
-                
             # citeste mastile de segmentare pentru cei doi plamani
             
             img_right= load_img(row['right_lung_mask_path'],target_size=self.img_size) # de completat
@@ -193,8 +190,7 @@ class LungSegDataGenerator(keras.utils.Sequence):
             img = self.__combine_masks(img_right, img_left)
 
             y[i] = img
-            y[i] = y[i].reshape((1,) + y[i].shape) 
-            datagen.fit(y[i])
+        
 
         
         return x, y
