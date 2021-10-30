@@ -218,7 +218,7 @@ unet = UNetModel()
 unet_model = unet.build(*config["data"]["img_size"], n_channels=3, n_classes=3)
 unet_model.summary()
 
-datagen=
+
 train_df=dataset_df.loc[dataset_df['subset']=='train']
 train_gen = LungSegDataGenerator(train_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=True)
 
