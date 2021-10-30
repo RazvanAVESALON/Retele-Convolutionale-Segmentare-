@@ -227,7 +227,7 @@ valid_gen = LungSegDataGenerator(valid_df, img_size=config["data"]["img_size"], 
 
 
 
-unet_model.compile(loss="binary_crossentropy",optimizer=tf.keras.optimizers.Adam(learning_rate=config['train']['lr']) , metrics=["accuracy"])
+unet_model.compile(loss="binary_crossentropy",optimizer=tf.keras.optimizers.SGD(learning_rate=config['train']['lr']) , metrics=["accuracy"])
 
 callbacks = [
     keras.callbacks.ModelCheckpoint('damn.h5', save_best_only=True)
