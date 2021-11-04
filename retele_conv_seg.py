@@ -9,7 +9,7 @@ from tensorflow import keras
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator , load_img
 from UNetModel import UNetModel
-from PIL 
+from PIL import Image , ImageEnhance
 config = None
 with open('config.yaml') as f: # reads .yml/.yaml files
     config = yaml.safe_load(f)
@@ -116,15 +116,37 @@ dataset_df.head(3)
 class LungSegDataGenerator(keras.utils.Sequence):
     """Un DataGenerator custom pentru setul de date pentru segmentare plamanilor"""
 
-    def __init__(self, dataset_df, img_size, batch_size, shuffle=True, rotation=20):
+    def __init__(self, dataset_df, img_size, batch_size, shuffle=True, rotation=20,factor=0.5):
         self.dataset_df = dataset_df.reset_index(drop=True)
         self.img_size = tuple(img_size)
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.indexes = np.arange(len(self.dataset_df))
+        self.rotation=20
+        self.factor=0.5
+        
 
     def __apply_data_aug(self, img, mask):
         # rotatie with self.rotation
+        rotated=img.rotate(self.rotation)
+        mask=Image.fromarray(np.uint8(mask))
+        rotated_2=mask.rotate(self.rotation)
+        # flip 
+
+        fliped=rotated.transpose(Image.FLIP_LEFT_RIGHT)
+        fliped2=rotated_2.transpose(Image.FLIP_LEFT_RIGHT)
+        
+
+        # brightnness
+        enhancer=ImageEnhance.Brightness(fliped)
+        enhancer2=ImageEnhance.Brightness(fliped2)
+
+        img_output=enhancer.enhance(self.factor)
+        mask_output=enhancer2.enhance(self.factor)
+
+        return img_output, mask_output
+
+
 
     def __len__(self):
         """
@@ -186,11 +208,7 @@ class LungSegDataGenerator(keras.utils.Sequence):
             mask = self.__combine_masks(img_right, img_left)
 
             img, mask = self.__apply_data_aug(img, mask)
-            # change contrast
-            img 
-
-            # rotatie
-            img, mask
+            
 
             # filp
 
