@@ -12,7 +12,7 @@ data:
 
 train:
   bs: 8
-  lr: 0.00001
+  lr: 0.0001
   opt: Adam
   epochs: 20
 
