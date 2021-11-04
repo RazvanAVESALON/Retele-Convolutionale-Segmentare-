@@ -14,7 +14,7 @@ train:
   bs: 5
   lr: 0.001
   opt: Adam
-  epochs: 10
+  epochs: 50
 
 test:
-  threshold: 0.8
+  threshold: 0.5
