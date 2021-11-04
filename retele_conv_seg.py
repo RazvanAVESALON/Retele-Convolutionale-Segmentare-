@@ -9,6 +9,7 @@ from tensorflow import keras
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator , load_img
 from UNetModel import UNetModel
+from PIL 
 config = None
 with open('config.yaml') as f: # reads .yml/.yaml files
     config = yaml.safe_load(f)
@@ -115,12 +116,15 @@ dataset_df.head(3)
 class LungSegDataGenerator(keras.utils.Sequence):
     """Un DataGenerator custom pentru setul de date pentru segmentare plamanilor"""
 
-    def __init__(self, dataset_df, img_size, batch_size, shuffle=True):
+    def __init__(self, dataset_df, img_size, batch_size, shuffle=True, rotation=20):
         self.dataset_df = dataset_df.reset_index(drop=True)
         self.img_size = tuple(img_size)
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.indexes = np.arange(len(self.dataset_df))
+
+    def __apply_data_aug(self, img, mask):
+        # rotatie with self.rotation
 
     def __len__(self):
         """
@@ -172,19 +176,26 @@ class LungSegDataGenerator(keras.utils.Sequence):
             # hint: functia load_img
             
             img = load_img(row['image_path'],target_size=self.img_size)
-            
-            x[i]=np.array(img) * 1/255
-            
-            
+
             # citeste mastile de segmentare pentru cei doi plamani
             
             img_right= load_img(row['right_lung_mask_path'],target_size=self.img_size) # de completat
             
             img_left = load_img(row['left_lung_mask_path'],target_size=self.img_size) # de completat
 
-            img = self.__combine_masks(img_right, img_left)
+            mask = self.__combine_masks(img_right, img_left)
 
-            y[i] = img
+            img, mask = self.__apply_data_aug(img, mask)
+            # change contrast
+            img 
+
+            # rotatie
+            img, mask
+
+            # filp
+
+            x[i]=np.array(img) * 1/255
+            y[i] = mask
         
 
         
