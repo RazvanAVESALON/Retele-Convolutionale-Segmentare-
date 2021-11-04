@@ -21,13 +21,13 @@ class UNetModel:
         
         # encoder
 
-        conv = Conv2D(filters=16, kernel_size=(3, 3), padding='same', strides=1, activation='relu')(max_pool)
+        conv = Conv2D(filters=16, kernel_size=(3, 3), padding='same', strides=1, activation='relu')(inputs)
         conv = BatchNormalization()(conv)
         conv = Conv2D(filters=16, kernel_size=(3, 3), padding='same', strides=1, activation='relu')(conv)
         conv4 = BatchNormalization()(conv) # skip connection #4
         max_pool = MaxPool2D(pool_size=(2, 2), strides=(2, 2))(conv4)  
 
-        conv = Conv2D(filters=32, kernel_size=(3, 3), padding='same', strides=1, activation='relu')(inputs)
+        conv = Conv2D(filters=32, kernel_size=(3, 3), padding='same', strides=1, activation='relu')(max_pool)
         conv = BatchNormalization()(conv)
         conv = Conv2D(filters=32, kernel_size=(3, 3), padding='same', strides=1, activation='relu')(conv)
         conv1 = BatchNormalization()(conv) # skip connection #1
