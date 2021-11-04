@@ -116,14 +116,14 @@ dataset_df.head(3)
 class LungSegDataGenerator(keras.utils.Sequence):
     """Un DataGenerator custom pentru setul de date pentru segmentare plamanilor"""
 
-    def __init__(self, dataset_df, img_size, batch_size, shuffle=True, rotation=20,factor=0.5):
+    def __init__(self, dataset_df, img_size, batch_size, shuffle=True, rotation=20,factor=1.5):
         self.dataset_df = dataset_df.reset_index(drop=True)
         self.img_size = tuple(img_size)
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.indexes = np.arange(len(self.dataset_df))
         self.rotation=20
-        self.factor=0.5
+        self.factor=1.5
         
 
     def __apply_data_aug(self, img, mask):
