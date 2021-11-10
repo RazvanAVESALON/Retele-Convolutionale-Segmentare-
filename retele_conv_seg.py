@@ -285,6 +285,7 @@ y_pred.shape
 
 nr_exs = 4 # nr de exemple de afisat
 fig, axs = plt.subplots(nr_exs, 3, figsize=(10, 10))
+
 for i, (img, gt, pred) in enumerate(zip(x[:nr_exs], y[:nr_exs], y_pred[:nr_exs])):
     axs[i][0].axis('off')
     axs[i][0].set_title('Input')
@@ -300,4 +301,5 @@ for i, (img, gt, pred) in enumerate(zip(x[:nr_exs], y[:nr_exs], y_pred[:nr_exs])
 
     axs[i][2].axis('off')
     axs[i][2].set_title('Prediction')
-    axs[i][2].imshow(pred, cmap='gray')
+    axs[i][2].imshow(pred)
+plt.show()
