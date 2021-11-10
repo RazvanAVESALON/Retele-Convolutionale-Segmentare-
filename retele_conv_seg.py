@@ -116,36 +116,43 @@ dataset_df.head(3)
 class LungSegDataGenerator(keras.utils.Sequence):
     """Un DataGenerator custom pentru setul de date pentru segmentare plamanilor"""
 
-    def __init__(self, dataset_df, img_size, batch_size, shuffle=True, rotation=20,factor=1.5):
+    def __init__(self, dataset_df, img_size, batch_size,  rotation= 0, factor= 1 ,probability=config['augumentare']['probabilitate'],shuffle=True):
         self.dataset_df = dataset_df.reset_index(drop=True)
         self.img_size = tuple(img_size)
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.indexes = np.arange(len(self.dataset_df))
-        self.rotation=20
-        self.factor=1.5
+        self.rotation=rotation
+        self.factor=factor
+        self.probability=probability
         
 
     def __apply_data_aug(self, img, mask):
         # rotatie with self.rotation
+        
+        self.rotation=random.randint(0,config['augumentare']['rotatie'])
         rotated=img.rotate(self.rotation)
         mask=Image.fromarray(np.uint8(mask))
         rotated_2=mask.rotate(self.rotation)
         # flip 
-
-        fliped=rotated.transpose(Image.FLIP_LEFT_RIGHT)
-        fliped2=rotated_2.transpose(Image.FLIP_LEFT_RIGHT)
+        if(random.randint(1,100)<self.probability):
+         fliped=rotated.transpose(Image.FLIP_LEFT_RIGHT)
+         fliped2=rotated_2.transpose(Image.FLIP_LEFT_RIGHT)
+         output_1=fliped
+         output_2=fliped2
         
-
+        else:
+            output_1=rotated
+            output_2=rotated_2
+            
         # brightnness
-        enhancer=ImageEnhance.Brightness(fliped)
-        enhancer2=ImageEnhance.Brightness(fliped2)
-
+        self.factor=random.uniform(0,config['augumentare']['factor'])
+        enhancer=ImageEnhance.Brightness(output_1)
         img_output=enhancer.enhance(self.factor)
-        mask_output=enhancer2.enhance(self.factor)
 
-        return img_output, mask_output
-
+        mask_output=output_2
+    
+        return img_output,mask_output
 
 
     def __len__(self):
@@ -227,7 +234,7 @@ class LungSegDataGenerator(keras.utils.Sequence):
         if self.shuffle == True:
             np.random.shuffle(self.indexes)
 
-data_gen = LungSegDataGenerator(dataset_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"])
+data_gen = LungSegDataGenerator(dataset_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"] )
 x, y = data_gen[0]
 print(x.shape, y.shape)
 
