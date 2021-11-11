@@ -12,14 +12,14 @@ data:
 
 train:
   bs: 8
-  lr: 0.000001
+  lr: 0.0001
   opt: Adam
   epochs: 50
 
 test:
-  threshold: 0.5
+  threshold: 0.3
 
 augumentare:
-  rotatie: 360
+  rotatie: 180
   factor: 2
   probabilitate: 80
