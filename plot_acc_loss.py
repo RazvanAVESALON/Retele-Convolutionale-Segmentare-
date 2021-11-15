@@ -1,4 +1,7 @@
+import matplotlib.pyplot as plt
+
 def plot_acc_loss(result):
+
     acc = result.history['accuracy']
     loss = result.history['loss']
     val_acc = result.history['val_accuracy']
