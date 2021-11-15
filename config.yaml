@@ -17,9 +17,9 @@ train:
   epochs: 50
 
 test:
-  threshold: 0.3
+  threshold: 0.5
 
 augumentare:
-  rotatie: 180
+  rotatie: 360
   factor: 2
   probabilitate: 80
