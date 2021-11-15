@@ -214,7 +214,8 @@ class LungSegDataGenerator(keras.utils.Sequence):
 
             mask = self.__combine_masks(img_right, img_left)
 
-            img, mask = self.__apply_data_aug(img, mask)
+            if row['subset'] == 'train':
+                img, mask = self.__apply_data_aug(img, mask)
             
 
             # filp
@@ -282,7 +283,7 @@ print(f"Test Acc: {result[1] * 100}")
 x, y = test_gen[0]
 y_pred = unet_model.predict(x)
 y_pred.shape
-
+print(y_pred)
 nr_exs = 4 # nr de exemple de afisat
 fig, axs = plt.subplots(nr_exs, 3, figsize=(10, 10))
 
@@ -294,12 +295,14 @@ for i, (img, gt, pred) in enumerate(zip(x[:nr_exs], y[:nr_exs], y_pred[:nr_exs])
     axs[i][1].axis('off')
     axs[i][1].set_title('Ground truth')
     axs[i][1].imshow(gt, cmap='gray')
-
-    pred[pred > config['test']['threshold']] = 1
-    pred[pred <= config['test']['threshold']] = 0
-    pred = pred.astype("uint8")
-
+    print(gt.dtype, gt.min(), gt.max())
+    pred[pred > config['test']['threshold']] = 1.0
+    pred[pred <= config['test']['threshold']] = 0.0
+    # pred = pred.astype("uint8")
+    print(pred.dtype, pred.min(), pred.max())
+ 
     axs[i][2].axis('off')
     axs[i][2].set_title('Prediction')
-    axs[i][2].imshow(pred)
-plt.show()
+    axs[i][2].imshow(pred, cmap='gray')
+plt.savefig("test.png")
+# plt.show()
