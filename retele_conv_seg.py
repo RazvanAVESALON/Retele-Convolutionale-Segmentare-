@@ -12,23 +12,22 @@ from UNetModel import UNetModel
 from PIL import Image , ImageEnhance
 from LungsSegDataGenerator import LungsSegDataGenerator
 from datasetconfig import split_dataset , create_dataset_csv
+from plot_acc_loss import plot_acc_loss 
+from datetime import datetime
+import os 
+local_dt=datetime.now()
+
 config = None
 with open('config.yaml') as f: # reads .yml/.yaml files
     config = yaml.safe_load(f)
-
-
-
 
 dataset_df = create_dataset_csv(config["data"]["images_dir"], 
                                 config["data"]["right_masks_dir"],
                                 config["data"]["left_masks_dir"],
                                 config["data"]["data_csv"])
 
-
 dataset_df = split_dataset(dataset_df, split_per=config['data']['split_per'], seed=1)
 dataset_df.head(3)
-
-
 
 data_gen = LungsSegDataGenerator(dataset_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"] )
 x, y = data_gen[0]
@@ -50,25 +49,25 @@ unet = UNetModel()
 unet_model = unet.build(*config["data"]["img_size"], n_channels=3, n_classes=3)
 unet_model.summary()
 
-
 train_df=dataset_df.loc[dataset_df['subset']=='train']
-train_gen = LungSegDataGenerator(train_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=True)
+train_gen = LungsSegDataGenerator(train_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=True)
 
 valid_df =dataset_df.loc[dataset_df['subset']=='valid']# de completat
 valid_gen = LungsSegDataGenerator(valid_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=True)
 
-
-
-unet_model.compile(loss="binary_crossentropy",optimizer=tf.keras.optimizers.SGD(learning_rate=config['train']['lr']) , metrics=["accuracy"])
+unet_model.compile(loss="binary_crossentropy",optimizer=tf.keras.optimizers.Adam(learning_rate=config['train']['lr']) , metrics=["accuracy"])
 
 callbacks = [
-    keras.callbacks.ModelCheckpoint('damn.h5', save_best_only=True)
+    keras.callbacks.ModelCheckpoint('damn.h5', save_best_only=True),
+
+    keras.callbacks.CSVLogger("file.csv{local_dt}", separator="," , append=False)
     ]
 history=unet_model.fit(train_gen, validation_data=valid_gen , epochs=config['train']['epochs'],callbacks=callbacks,workers=1)
 
+unet_model.save('saved_model/my_model')    
 
-    
 plot_acc_loss(history)
+
 
 test_df = dataset_df.loc[dataset_df['subset']=='test']# de completat
 test_gen = LungsSegDataGenerator(test_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=False)
@@ -78,7 +77,7 @@ print(f"Test Acc: {result[1] * 100}")
 x, y = test_gen[0]
 y_pred = unet_model.predict(x)
 y_pred.shape
-print(y_pred)
+
 nr_exs = 4 # nr de exemple de afisat
 fig, axs = plt.subplots(nr_exs, 3, figsize=(10, 10))
 
@@ -90,14 +89,12 @@ for i, (img, gt, pred) in enumerate(zip(x[:nr_exs], y[:nr_exs], y_pred[:nr_exs])
     axs[i][1].axis('off')
     axs[i][1].set_title('Ground truth')
     axs[i][1].imshow(gt, cmap='gray')
-    print(gt.dtype, gt.min(), gt.max())
+  
     pred[pred > config['test']['threshold']] = 1.0
     pred[pred <= config['test']['threshold']] = 0.0
     # pred = pred.astype("uint8")
-    print(pred.dtype, pred.min(), pred.max())
- 
+
     axs[i][2].axis('off')
     axs[i][2].set_title('Prediction')
     axs[i][2].imshow(pred, cmap='gray')
-plt.savefig("test.png")
-# plt.show()
+plt.show()
