@@ -16,3 +16,4 @@ saved_model/my_model/variables/variables.index
 __pycache__/LungsSegDataGenerator.cpython-39.pyc
 *.pyc
 *.h5
+dataset_seg.csv
