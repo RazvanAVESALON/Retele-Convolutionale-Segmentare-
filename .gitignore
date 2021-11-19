@@ -17,3 +17,4 @@ __pycache__/LungsSegDataGenerator.cpython-39.pyc
 *.pyc
 *.h5
 dataset_seg.csv
+*.csv
