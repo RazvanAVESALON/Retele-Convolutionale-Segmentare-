@@ -17,6 +17,14 @@ from datetime import datetime
 import os 
 local_dt=datetime.now()
 
+
+def dice_coef(y_true, y_pred):
+    y_true_f = tf.reshape(tf.dtypes.cast(y_true, tf.float32), [-1])
+    y_pred_f = tf.reshape(tf.dtypes.cast(y_pred, tf.float32), [-1])
+    intersection = tf.reduce_sum(y_true_f * y_pred_f)
+    return (2. * intersection + 1.) / (tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + 1.)
+
+
 config = None
 with open('config.yaml') as f: # reads .yml/.yaml files
     config = yaml.safe_load(f)
@@ -76,10 +84,11 @@ print(f"Test Acc: {result[1] * 100}")
 
 x, y = test_gen[0]
 y_pred = unet_model.predict(x)
-y_pred.shape
+
+
 
 nr_exs = 4 # nr de exemple de afisat
-fig, axs = plt.subplots(nr_exs, 3, figsize=(10, 10))
+fig, axs = plt.subplots(nr_exs, 4, figsize=(10, 10))
 
 for i, (img, gt, pred) in enumerate(zip(x[:nr_exs], y[:nr_exs], y_pred[:nr_exs])):
     axs[i][0].axis('off')
@@ -89,7 +98,7 @@ for i, (img, gt, pred) in enumerate(zip(x[:nr_exs], y[:nr_exs], y_pred[:nr_exs])
     axs[i][1].axis('off')
     axs[i][1].set_title('Ground truth')
     axs[i][1].imshow(gt, cmap='gray')
-  
+    
     pred[pred > config['test']['threshold']] = 1.0
     pred[pred <= config['test']['threshold']] = 0.0
     # pred = pred.astype("uint8")
@@ -97,4 +106,12 @@ for i, (img, gt, pred) in enumerate(zip(x[:nr_exs], y[:nr_exs], y_pred[:nr_exs])
     axs[i][2].axis('off')
     axs[i][2].set_title('Prediction')
     axs[i][2].imshow(pred, cmap='gray')
+
+    dice_index=dice_coef(gt,pred)
+    
+    axs[i][3].axis('off')
+    axs[i][3].set_title('Dice Index')
+    axs[i][3].plt(dice_coef)
+    
+
 plt.show()
