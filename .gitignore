@@ -8,3 +8,4 @@ __pycache__/
 *.h5
 dataset_seg.csv
 *.csv
++saved_model/
