@@ -57,10 +57,10 @@ unet = UNetModel()
 unet_model = unet.build(*config["data"]["img_size"], n_channels=3, n_classes=3)
 unet_model.summary()
 
-train_df=dataset_df.loc[dataset_df['subset']=='train']
+train_df= dataset_df.loc[dataset_df['subset']=='train']
 train_gen = LungsSegDataGenerator(train_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=True)
 
-valid_df =dataset_df.loc[dataset_df['subset']=='valid']# de completat
+valid_df = dataset_df.loc[dataset_df['subset']=='valid']
 valid_gen = LungsSegDataGenerator(valid_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=True)
 
 unet_model.compile(loss="binary_crossentropy",optimizer=tf.keras.optimizers.Adam(learning_rate=config['train']['lr']) , metrics=["accuracy"])
@@ -77,7 +77,7 @@ unet_model.save('saved_model/my_model')
 plot_acc_loss(history)
 
 
-test_df = dataset_df.loc[dataset_df['subset']=='test']# de completat
+test_df = dataset_df.loc[dataset_df['subset']=='test']
 test_gen = LungsSegDataGenerator(test_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=False)
 result = unet_model.evaluate(test_gen)
 print(f"Test Acc: {result[1] * 100}")
