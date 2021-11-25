@@ -6,10 +6,6 @@ import random
 import tensorflow as tf
 from tensorflow import keras
 
-
-
-
-
 def create_dataset_csv(images_dir, right_masks_dir, left_masks_dir, csv_path):
     
     
