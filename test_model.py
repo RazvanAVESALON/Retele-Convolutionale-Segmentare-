@@ -15,12 +15,10 @@ dataset_df = create_dataset_csv(config["data"]["images_dir"],
 
 dataset_df = split_dataset(dataset_df, split_per=config['data']['split_per'], seed=1)
 
-
 data_gen = LungsSegDataGenerator(dataset_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"] )
 
 new_model = tf.keras.models.load_model('saved_model/my_model')
 new_model.summary()
-
 
 test_df = dataset_df.loc[dataset_df['subset']=='test']
 test_gen = LungsSegDataGenerator(test_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=False)
