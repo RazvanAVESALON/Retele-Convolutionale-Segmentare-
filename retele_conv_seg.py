@@ -108,10 +108,10 @@ for i, (img, gt, pred) in enumerate(zip(x[:nr_exs], y[:nr_exs], y_pred[:nr_exs])
     axs[i][2].imshow(pred, cmap='gray')
 
     dice_index=dice_coef(gt,pred)
-    
+    print (dice_coef)
     axs[i][3].axis('off')
     axs[i][3].set_title('Dice Index')
-    axs[i][3].plt(dice_coef)
+    axs[i][3].imshow(dice_coef,cmap='gray')
     
 
 plt.show()
