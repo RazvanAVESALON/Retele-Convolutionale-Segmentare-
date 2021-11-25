@@ -8,14 +8,12 @@ from tensorflow import keras
 from tensorflow.keras.preprocessing.image import ImageDataGenerator , load_img
 from PIL import Image , ImageEnhance
 
-config = None
-with open('config.yaml') as f: # reads .yml/.yaml files
-    config = yaml.safe_load(f)
+
 
 class LungsSegDataGenerator(keras.utils.Sequence):
     """Un DataGenerator custom pentru setul de date pentru segmentare plamanilor"""
 
-    def __init__(self, dataset_df, img_size, batch_size,  rotation= 0, factor= 1 ,probability=config['augumentare']['probabilitate'],shuffle=True):
+    def __init__(self, dataset_df, img_size, batch_size,  rotation= 0, factor= 1 ,probability=80,shuffle=True):
         self.dataset_df = dataset_df.reset_index(drop=True)
         self.img_size = tuple(img_size)
         self.batch_size = batch_size
@@ -29,7 +27,7 @@ class LungsSegDataGenerator(keras.utils.Sequence):
     def __apply_data_aug(self, img, mask):
         # rotatie with self.rotation
         
-        self.rotation=random.randint(0,config['augumentare']['rotatie'])
+        self.rotation=random.randint(0,360)
         rotated=img.rotate(self.rotation)
         mask=Image.fromarray(np.uint8(mask))
         rotated_2=mask.rotate(self.rotation)
@@ -45,7 +43,7 @@ class LungsSegDataGenerator(keras.utils.Sequence):
             output_2=rotated_2
             
         # brightnness
-        self.factor=random.uniform(0,config['augumentare']['factor'])
+        self.factor=random.uniform(0,2)
         enhancer=ImageEnhance.Brightness(output_1)
         img_output=enhancer.enhance(self.factor)
 
