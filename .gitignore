@@ -1,19 +1,9 @@
 
-__pycache__/UNetModel.cpython-39.pyc
+__pycache__/
 +damn.h5
 +Hyperparameters segmentare
 +dataset_seg
 +file
-__pycache__/datasetconfig.cpython-39.pyc
-__pycache__/plot_acc_loss.cpython-39.pyc
-__pycache__/LungsSegDataGenerator.cpython-39.pyc
-saved_model/my_model/keras_metadata.pb
-__pycache__/LungsSegDataGenerator.cpython-39.pyc
-saved_model/my_model/saved_model.pb
-__pycache__/LungsSegDataGenerator.cpython-39.pyc
-saved_model/my_model/variables/variables.data-00000-of-00001
-saved_model/my_model/variables/variables.index
-__pycache__/LungsSegDataGenerator.cpython-39.pyc
 *.pyc
 *.h5
 dataset_seg.csv
