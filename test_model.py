@@ -4,6 +4,12 @@ import matplotlib.pyplot as plt
 from datasetconfig import split_dataset , create_dataset_csv
 import yaml
 
+def dice_coef(y_true, y_pred):
+    y_true_f = tf.reshape(tf.dtypes.cast(y_true, tf.float32), [-1])
+    y_pred_f = tf.reshape(tf.dtypes.cast(y_pred, tf.float32), [-1])
+    intersection = tf.reduce_sum(y_true_f * y_pred_f)
+    return (2. * intersection + 1.) / (tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + 1.)
+
 config = None
 with open('config.yaml') as f: # reads .yml/.yaml files
     config = yaml.safe_load(f)
@@ -41,12 +47,14 @@ for i, (img, gt, pred) in enumerate(zip(x[:nr_exs], y[:nr_exs], y_pred[:nr_exs])
     axs[i][1].set_title('Ground truth')
     axs[i][1].imshow(gt, cmap='gray')
   
-    pred[pred > config['test']['threshold']] = 1.0
-    pred[pred <= config['test']['threshold']] = 0.0
+    pred[pred > config['test']['threshold']] = 1
+    pred[pred <= config['test']['threshold']] = 0
     # pred = pred.astype("uint8")
+    print(img.dtype, gt.dtype, pred.dtype)
+    print(gt.shape, pred.shape)
   
- 
+    dice_index=dice_coef(gt,pred)
     axs[i][2].axis('off')
-    axs[i][2].set_title('Prediction')
+    axs[i][2].set_title(f'Prediction. Dice_index={dice_index}')
     axs[i][2].imshow(pred, cmap='gray')
 plt.show()
