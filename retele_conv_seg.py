@@ -106,6 +106,5 @@ for i, (img, gt, pred) in enumerate(zip(x[:nr_exs], y[:nr_exs], y_pred[:nr_exs])
     axs[i][2].axis('off')
     axs[i][2].set_title(f'Prediction. Dice Index = {dice_index}')
     axs[i][2].imshow(pred, cmap='gray')
-    
-
+    S
 plt.show()
