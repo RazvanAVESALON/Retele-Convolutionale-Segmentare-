@@ -63,7 +63,7 @@ train_gen = LungsSegDataGenerator(train_df, img_size=config["data"]["img_size"],
 valid_df = dataset_df.loc[dataset_df['subset']=='valid']
 valid_gen = LungsSegDataGenerator(valid_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=True)
 
-unet_model.compile(loss="binary_crossentropy",optimizer=tf.keras.optimizers.Adam(learning_rate=config['train']['lr']) , metrics=["accuracy"])
+unet_model.compile(loss="binary_crossentropy",optimizer=tf.keras.optimizers.Adam(learning_rate=config['train']['lr']) , metrics=[dice_coef])
 
 callbacks = [
     keras.callbacks.ModelCheckpoint('damn.h5', save_best_only=True),
@@ -76,11 +76,10 @@ unet_model.save('saved_model/my_model')
 
 plot_acc_loss(history)
 
-
 test_df = dataset_df.loc[dataset_df['subset']=='test']
 test_gen = LungsSegDataGenerator(test_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=False)
 result = unet_model.evaluate(test_gen)
-print(f"Test Acc: {result[1] * 100}")
+print(f"Dice index AVG:{ result[1]} ")
 
 x, y = test_gen[0]
 y_pred = unet_model.predict(x)
@@ -103,15 +102,10 @@ for i, (img, gt, pred) in enumerate(zip(x[:nr_exs], y[:nr_exs], y_pred[:nr_exs])
     pred[pred <= config['test']['threshold']] = 0.0
     # pred = pred.astype("uint8")
 
-    axs[i][2].axis('off')
-    axs[i][2].set_title('Prediction')
-    axs[i][2].imshow(pred, cmap='gray')
-
     dice_index=dice_coef(gt,pred)
-    print (dice_coef)
-    axs[i][3].axis('off')
-    axs[i][3].set_title('Dice Index')
-    axs[i][3].imshow(dice_coef,cmap='gray')
+    axs[i][2].axis('off')
+    axs[i][2].set_title(f'Prediction. Dice Index = {dice_index}')
+    axs[i][2].imshow(pred, cmap='gray')
     
 
 plt.show()
