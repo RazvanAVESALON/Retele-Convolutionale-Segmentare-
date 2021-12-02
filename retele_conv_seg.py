@@ -68,7 +68,7 @@ unet_model.compile(loss="binary_crossentropy",optimizer=tf.keras.optimizers.Adam
 callbacks = [
     keras.callbacks.ModelCheckpoint('damn.h5', save_best_only=True),
 
-    keras.callbacks.CSVLogger("file.csv{local_dt}", separator="," , append=False)
+    keras.callbacks.CSVLogger(f"file.csv{local_dt}", separator="," , append=False)
     ]
 history=unet_model.fit(train_gen, validation_data=valid_gen , epochs=config['train']['epochs'],callbacks=callbacks,workers=1)
 
