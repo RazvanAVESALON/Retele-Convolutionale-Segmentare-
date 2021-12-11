@@ -15,7 +15,7 @@ from datasetconfig import split_dataset , create_dataset_csv
 from plot_acc_loss import plot_acc_loss 
 from datetime import datetime
 import os 
-local_dt=datetime.now()
+
 
 
 def dice_coef(y_true, y_pred):
@@ -24,7 +24,11 @@ def dice_coef(y_true, y_pred):
     intersection = tf.reduce_sum(y_true_f * y_pred_f)
     return (2. * intersection + 1.) / (tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + 1.)
 
-
+def dice_coef_loss(y_true, y_pred):
+    y_true_f = tf.reshape(tf.dtypes.cast(y_true, tf.float32), [-1])
+    y_pred_f = tf.reshape(tf.dtypes.cast(y_pred, tf.float32), [-1])
+    intersection = tf.reduce_sum(y_true_f * y_pred_f)
+    return 1-(2. * intersection + 1.) / (tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + 1.)
 config = None
 with open('config.yaml') as f: # reads .yml/.yaml files
     config = yaml.safe_load(f)
@@ -62,13 +66,18 @@ train_gen = LungsSegDataGenerator(train_df, img_size=config["data"]["img_size"],
 
 valid_df = dataset_df.loc[dataset_df['subset']=='valid']
 valid_gen = LungsSegDataGenerator(valid_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=True)
+if (config['train']['opt']=='Adam'):
+ unet_model.compile(loss=dice_coef_loss,optimizer=tf.keras.optimizers.Adam(learning_rate=config['train']['lr']) , metrics=[dice_coef])
+elif (config['train']['opt']=='RMSprop'): 
+ unet_model.compile(loss=dice_coef_loss,optimizer=tf.keras.optimizers.RMSprop(learning_rate=config['train']['lr']) , metrics=[dice_coef])
+elif(config['train']['opt']=='SGD'):
+ unet_model.compile(loss=dice_coef_loss,optimizer=tf.keras.optimizers.RMSprop(learning_rate=config['train']['lr']) , metrics=[dice_coef])
 
-unet_model.compile(loss="binary_crossentropy",optimizer=tf.keras.optimizers.Adam(learning_rate=config['train']['lr']) , metrics=[dice_coef])
 
 callbacks = [
     keras.callbacks.ModelCheckpoint('damn.h5', save_best_only=True),
 
-    keras.callbacks.CSVLogger(f"file.csv{local_dt}", separator="," , append=False)
+    keras.callbacks.CSVLogger(f"file{datetime.now().strftime('%H%M_%m%d%Y')}.csv", separator="," , append=False)
     ]
 history=unet_model.fit(train_gen, validation_data=valid_gen , epochs=config['train']['epochs'],callbacks=callbacks,workers=1)
 
