@@ -21,4 +21,4 @@ test:
 augumentare:
   rotatie: 360
   factor: 2
-  probabilitate: 80
+  probabilitate: 50
