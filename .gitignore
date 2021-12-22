@@ -9,3 +9,4 @@ __pycache__/
 dataset_seg.csv
 *.csv
 +saved_model/
+*.png
