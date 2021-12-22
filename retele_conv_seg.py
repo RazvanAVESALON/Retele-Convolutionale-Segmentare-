@@ -67,11 +67,11 @@ train_gen = LungsSegDataGenerator(train_df, img_size=config["data"]["img_size"],
 valid_df = dataset_df.loc[dataset_df['subset']=='valid']
 valid_gen = LungsSegDataGenerator(valid_df, img_size=config["data"]["img_size"], batch_size=config["train"]["bs"], shuffle=True)
 if (config['train']['opt']=='Adam'):
- unet_model.compile(loss=dice_coef_loss,optimizer=tf.keras.optimizers.Adam(learning_rate=config['train']['lr']) , metrics=[dice_coef])
+ unet_model.compile(loss='binary_crossentropy',optimizer=tf.keras.optimizers.Adam(learning_rate=config['train']['lr']) , metrics=[dice_coef])
 elif (config['train']['opt']=='RMSprop'): 
- unet_model.compile(loss=dice_coef_loss,optimizer=tf.keras.optimizers.RMSprop(learning_rate=config['train']['lr']) , metrics=[dice_coef])
+ unet_model.compile(loss='binary_crossentropy',optimizer=tf.keras.optimizers.RMSprop(learning_rate=config['train']['lr']) , metrics=[dice_coef])
 elif(config['train']['opt']=='SGD'):
- unet_model.compile(loss=dice_coef_loss,optimizer=tf.keras.optimizers.RMSprop(learning_rate=config['train']['lr']) , metrics=[dice_coef])
+ unet_model.compile(loss='binary_crossentropy',optimizer=tf.keras.optimizers.RMSprop(learning_rate=config['train']['lr']) , metrics=[dice_coef])
 
 
 callbacks = [
@@ -81,7 +81,7 @@ callbacks = [
     ]
 history=unet_model.fit(train_gen, validation_data=valid_gen , epochs=config['train']['epochs'],callbacks=callbacks,workers=1)
 
-unet_model.save('saved_model/my_model')    
+unet_model.save(f"damn{datetime.now().strftime('%H%M_%m%d%Y')}.h5")    
 
 plot_acc_loss(history)
 
@@ -96,7 +96,7 @@ y_pred = unet_model.predict(x)
 
 
 nr_exs = 4 # nr de exemple de afisat
-fig, axs = plt.subplots(nr_exs, 4, figsize=(10, 10))
+fig, axs = plt.subplots(nr_exs, 3, figsize=(10, 10))
 
 for i, (img, gt, pred) in enumerate(zip(x[:nr_exs], y[:nr_exs], y_pred[:nr_exs])):
     axs[i][0].axis('off')
