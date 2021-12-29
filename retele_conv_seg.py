@@ -71,7 +71,7 @@ if (config['train']['opt']=='Adam'):
 elif (config['train']['opt']=='RMSprop'): 
  unet_model.compile(loss='binary_crossentropy',optimizer=tf.keras.optimizers.RMSprop(learning_rate=config['train']['lr']) , metrics=[dice_coef])
 elif(config['train']['opt']=='SGD'):
- unet_model.compile(loss='binary_crossentropy',optimizer=tf.keras.optimizers.RMSprop(learning_rate=config['train']['lr']) , metrics=[dice_coef])
+ unet_model.compile(loss='binary_crossentropy',optimizer=tf.keras.optimizers.SGD(learning_rate=config['train']['lr']) , metrics=[dice_coef])
 
 
 callbacks = [
