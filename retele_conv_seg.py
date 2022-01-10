@@ -29,6 +29,7 @@ def dice_coef_loss(y_true, y_pred):
     y_pred_f = tf.reshape(tf.dtypes.cast(y_pred, tf.float32), [-1])
     intersection = tf.reduce_sum(y_true_f * y_pred_f)
     return 1-(2. * intersection + 1.) / (tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + 1.)
+    
 config = None
 with open('config.yaml') as f: # reads .yml/.yaml files
     config = yaml.safe_load(f)
