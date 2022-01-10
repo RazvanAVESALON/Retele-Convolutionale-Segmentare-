@@ -11,13 +11,13 @@ data:
     test: 0.1
 
 train:
-  bs: 16
+  bs: 8
   lr: 0.0001
   opt: RMSprop
-  epochs: 100
+  epochs: 200
 test:
   threshold: 0.5
 augumentare:
-  rotatie: 360
+  rotatie: 180
   factor: 4
-  probabilitate: 80
+  probabilitate: 70
